@@ -55,7 +55,7 @@ const Login = () => {
             duration: 3000,
             isClosable: true,
          });
-         return navigate("/");
+         return navigate("/dashboard");
       } else {
          toast({
             position: "top",

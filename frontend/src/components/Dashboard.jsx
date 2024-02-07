@@ -17,27 +17,25 @@ import {
    FormLabel,
    Input,
 } from "@chakra-ui/react";
+import {  HashLoader } from "react-spinners";
 import PatientCard from "./PatientCard";
 import { useNavigate } from "react-router-dom";
-// import { AuthContext } from "../Context/AuthContext";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
    var authToken = localStorage.getItem("authToken");
    const user = localStorage.getItem("roles");
    // -------------------------------------- -------------------------//
-
+   // const swal = require('sweetalert2')
    const { isOpen, onOpen, onClose } = useDisclosure();
    const [overlay, setOverlay] = useState("");
    const [patients, setPatients] = useState([]);
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-   const [editingPatient, setEditingPatient] = useState(null);
    const [newPatient, setNewPatient] = useState({
       name: "",
       age: 0,
    });
    const [loading, setLoading] = useState(true);
-   const navigate = useNavigate();
-   //    const { user } = AuthContext() || {};
 
    const initialRef = React.useRef(null);
    const finalRef = React.useRef(null);
@@ -45,7 +43,7 @@ const Dashboard = () => {
    //    ----------------------------------
    // ---------------------------- EDIT ------------------------- //
    const [editedPatient, setEditedPatient] = useState({
-      id: "", 
+      id: "",
       firstName: "",
       lastName: "",
       age: 0,
@@ -58,9 +56,8 @@ const Dashboard = () => {
       );
 
       if (patientToEdit) {
-        
          const [firstName, lastName] = patientToEdit.name.split(" ");
-         const age = patientToEdit.age
+         const age = patientToEdit.age;
          setEditedPatient({
             id: patientId,
             firstName,
@@ -68,11 +65,19 @@ const Dashboard = () => {
             age,
          });
          if (user === "ADMIN") {
-             setIsEditModalOpen(true);
-            } else {
-                alert("You are a User and only has the assess to see it")
-               console.error("Failed to delete patient");
-            }
+            setIsEditModalOpen(true);
+         } else {
+            Swal.fire({
+               title: 'You are a User and only has the assess to see it',
+               html: ('<div>')
+                 .addClass('some-class')
+                 .text('You are a User and only has the assess to see it'),
+               animation: false,
+               customClass: 'animated tada'
+             })
+            // alert("You are a User and only has the assess to see it");
+            console.error("Failed to delete patient");
+         }
          // Open the edit modal or perform any other actions as needed
       } else {
          console.log("Patient not found");
@@ -95,7 +100,7 @@ const Dashboard = () => {
             {
                method: "PUT",
                headers: {
-                   Authorization: ` ${authToken}`,
+                  Authorization: ` ${authToken}`,
                   "Content-Type": "application/json",
                   // Add any other headers or authentication tokens if required
                },
@@ -106,7 +111,7 @@ const Dashboard = () => {
                }),
             }
          );
-        //  console.log(editedPatient);
+         //  console.log(editedPatient);
          if (response.ok) {
             console.log("Patient updated successfully");
             // Close the modal or perform other actions after successful update
@@ -150,10 +155,10 @@ const Dashboard = () => {
    }, []);
 
    const handleViewDetails = (patientId) => {
+
       console.log("View details for patient:", patientId);
    };
 
- 
    // <<<<<<<<<<<< ------------------ Deleting Patient --------------->>>>>>>>>>>> //
    const handleDelete = async (patientId) => {
       try {
@@ -175,10 +180,15 @@ const Dashboard = () => {
                // you can call a function passed through props or update the state accordingly.
                fetchPatientsFromAPI();
             } else {
-                console.error("Failed to delete patient:", response.statusText);
+               console.error("Failed to delete patient:", response.statusText);
             }
-        } else {
-             alert("You are a user and you are not allowed to delete it")
+         } else {
+            Swal.fire(
+               'Oops...',
+               'You are a user and you are not allowed to delete it.  Something went wrong!',
+               'error'
+             )
+            // alert("You are a user and you are not allowed to delete it");
             console.log("User does not have permission to delete.");
          }
       } catch (error) {
@@ -209,13 +219,18 @@ const Dashboard = () => {
             },
             body: JSON.stringify(newPatient),
          });
-         console.log(response);
+         // console.log(response);
          if (response.ok) {
             const newPatient = response.json();
             console.log("New patient added successfully:", newPatient);
-            alert("New patient added successfully");
+            Swal.fire(
+               'Good job!',
+               'New patient added successfully!',
+               'success'
+             )
+            // alert("New patient added successfully");
             fetchPatientsFromAPI();
-            onClose()
+            onClose();
             // If you want to update the state to reflect the addition in the UI,
             // you can call a function passed through props or update the state accordingly.
          } else {
@@ -237,272 +252,141 @@ const Dashboard = () => {
    );
    //<<<<<<<<<<------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>> //
    return (
-    //   <Flex direction="column" align="center" p={4}>
-    //      <Heading mb={4}>Patient Dashboard</Heading>
-    //      {user === "ADMIN" && (
-    //         <Button
-    //            onClick={() => {
-    //               setOverlay(<OverlayTwo />);
-    //               onOpen();
-    //            }}
-    //            colorScheme="green"
-    //            size="sm"
-    //            mb={4}
-    //         >
-    //            Add New Patient
-    //         </Button>
-    //      )}
-
-    //      {/* ----------------- New Patient Adding modal ------------------ */}
-    //      <Modal
-    //         initialFocusRef={initialRef}
-    //         finalFocusRef={finalRef}
-    //         isOpen={isOpen}
-    //         onClose={onClose}
-    //      >
-    //         {overlay}
-    //         <ModalContent>
-    //            <ModalHeader>Add a New Patient</ModalHeader>
-    //            <ModalCloseButton />
-    //            <ModalBody pb={6}>
-    //               <FormControl>
-    //                  <FormLabel>Full name</FormLabel>
-    //                  <Input
-    //                     ref={initialRef}
-    //                     name="name"
-    //                     placeholder="Full name"
-    //                     onChange={handleInputChange}
-    //                  />
-    //               </FormControl>
-
-    //               <FormControl mt={4}>
-    //                  <FormLabel>Age</FormLabel>
-    //                  <Input
-    //                     name="age"
-    //                     placeholder="Your Age"
-    //                     onChange={handleInputChange}
-    //                  />
-    //               </FormControl>
-    //            </ModalBody>
-
-    //            <ModalFooter>
-    //               <Button
-    //                  colorScheme="blue"
-    //                  mr={3}
-    //                  onClick={() => {
-    //                     handleAddPatient();
-    //                  }}
-    //               >
-    //                  Save
-    //               </Button>
-    //               <Button onClick={onClose}>Cancel</Button>
-    //            </ModalFooter>
-    //         </ModalContent>
-    //      </Modal>
-
-    //      {/* ----------------- edit modal --------------  */}
-    //      <Modal
-    //         initialFocusRef={initialRef}
-    //         finalFocusRef={finalRef}
-    //         isOpen={isEditModalOpen}
-    //         // isOpen={isOpen}
-    //         onClose={onClose}
-    //      >
-    //         <ModalOverlay />
-    //         <ModalContent>
-    //            <ModalHeader>Edit Patient</ModalHeader>
-    //            {/* <ModalCloseButton /> */}
-    //            <ModalBody pb={6}>
-    //               <FormControl>
-    //                  <FormLabel>First name</FormLabel>
-    //                  <Input
-    //                     ref={initialRef}
-    //                     placeholder="First name"
-    //                     name="firstName"
-    //                     value={editedPatient.firstName}
-    //                     onChange={handleInputChangee}
-    //                  />
-    //               </FormControl>
-
-    //               <FormControl mt={4}>
-    //                  <FormLabel>Last name</FormLabel>
-    //                  <Input
-    //                     placeholder="Last name"
-    //                     name="lastName"
-    //                     value={editedPatient.lastName}
-    //                     onChange={handleInputChangee}
-    //                  />
-    //               </FormControl>
-    //               <FormControl mt={4}>
-    //                  <FormLabel>Age</FormLabel>
-    //                  <Input
-    //                     placeholder="Age"
-    //                     name="age"
-    //                     value={editedPatient.age}
-    //                     onChange={handleInputChangee}
-    //                  />
-    //               </FormControl>
-    //            </ModalBody>
-
-    //            <ModalFooter>
-    //               <Button colorScheme="blue" mr={3} onClick={handleSave}>
-    //                  Save
-    //               </Button>
-    //               <Button onClick={() => setIsEditModalOpen(false)}>
-    //                  Cancel
-    //               </Button>
-    //            </ModalFooter>
-    //         </ModalContent>
-    //      </Modal>
-    //      {/* ---------------------------------------------------- */}
-    //      {loading ? (
-    //         <p>Loading patients...</p>
-    //      ) : (
-    //         <SimpleGrid columns={[1, 2, 3]} spacing={10}>
-    //            {patients.map((patient) => (
-    //               <PatientCard
-    //                  key={patient.id}
-    //                  patient={patient}
-    //                  onViewDetails={handleViewDetails}
-    //                  onEdit={(e) => handleEdit(e)}
-    //                  onDelete={handleDelete}
-    //               />
-    //            ))}
-    //         </SimpleGrid>
-    //      )}
-    //   </Flex>
-
-    <Flex direction="column" align="center" p={4}>
-   <Heading mb={4}>Patient Dashboard</Heading>
-   {user === "ADMIN" && (
-      <Button
-         onClick={() => {
-            setOverlay(<OverlayTwo />);
-            onOpen();
-         }}
-         colorScheme="green"
-         size="sm"
-         mb={4}
-      >
-         Add New Patient
-      </Button>
-   )}
-
-   {/* ----------------- New Patient Adding modal ------------------ */}
-   <Modal
-      initialFocusRef={initialRef}
-      finalFocusRef={finalRef}
-      isOpen={isOpen}
-      onClose={onClose}
-   >
-      {overlay}
-      <ModalContent>
-         <ModalHeader>Add a New Patient</ModalHeader>
-         <ModalCloseButton />
-         <ModalBody pb={6}>
-            <FormControl>
-               <FormLabel>Full name</FormLabel>
-               <Input
-                  ref={initialRef}
-                  name="name"
-                  placeholder="Full name"
-                  onChange={handleInputChange}
-               />
-            </FormControl>
-
-            <FormControl mt={4}>
-               <FormLabel>Age</FormLabel>
-               <Input
-                  name="age"
-                  placeholder="Your Age"
-                  onChange={handleInputChange}
-               />
-            </FormControl>
-         </ModalBody>
-
-         <ModalFooter>
+      <Flex direction="column" align="center" p={4}>
+         <Heading mb={4}>Patient Dashboard</Heading>
+         {user === "ADMIN" && (
             <Button
-               colorScheme="blue"
-               mr={3}
                onClick={() => {
-                  handleAddPatient();
+                  setOverlay(<OverlayTwo />);
+                  onOpen();
                }}
+               colorScheme="green"
+               size="sm"
+               mb={4}
             >
-               Save
+               Add New Patient
             </Button>
-            <Button onClick={onClose}>Cancel</Button>
-         </ModalFooter>
-      </ModalContent>
-   </Modal>
+         )}
 
-   {/* ----------------- edit modal --------------  */}
-   <Modal
-      initialFocusRef={initialRef}
-      finalFocusRef={finalRef}
-      isOpen={isEditModalOpen}
-      onClose={() => setIsEditModalOpen(false)}
-   >
-      <ModalOverlay />
-      <ModalContent>
-         <ModalHeader>Edit Patient</ModalHeader>
-         <ModalBody pb={6}>
-            <FormControl>
-               <FormLabel>First name</FormLabel>
-               <Input
-                  ref={initialRef}
-                  placeholder="First name"
-                  name="firstName"
-                  value={editedPatient.firstName}
-                  onChange={handleInputChangee}
-               />
-            </FormControl>
+         {/* ----------------- New Patient Adding modal ------------------ */}
+         <Modal
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+            isOpen={isOpen}
+            onClose={onClose}
+         >
+            {overlay}
+            <ModalContent>
+               <ModalHeader>Add a New Patient</ModalHeader>
+               <ModalCloseButton />
+               <ModalBody pb={6}>
+                  <FormControl>
+                     <FormLabel>Full name</FormLabel>
+                     <Input
+                        ref={initialRef}
+                        name="name"
+                        placeholder="Full name"
+                        onChange={handleInputChange}
+                     />
+                  </FormControl>
 
-            <FormControl mt={4}>
-               <FormLabel>Last name</FormLabel>
-               <Input
-                  placeholder="Last name"
-                  name="lastName"
-                  value={editedPatient.lastName}
-                  onChange={handleInputChangee}
-               />
-            </FormControl>
-            <FormControl mt={4}>
-               <FormLabel>Age</FormLabel>
-               <Input
-                  placeholder="Age"
-                  name="age"
-                  value={editedPatient.age}
-                  onChange={handleInputChangee}
-               />
-            </FormControl>
-         </ModalBody>
+                  <FormControl mt={4}>
+                     <FormLabel>Age</FormLabel>
+                     <Input
+                        name="age"
+                        placeholder="Your Age"
+                        onChange={handleInputChange}
+                     />
+                  </FormControl>
+               </ModalBody>
 
-         <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSave}>
-               Save
-            </Button>
-            <Button onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
-         </ModalFooter>
-      </ModalContent>
-   </Modal>
-   {/* ---------------------------------------------------- */}
-   {loading ? (
-      <p>Loading patients...</p>
-   ) : (
-      <SimpleGrid columns={[1, 2, 3]} spacing={10}>
-         {patients.map((patient) => (
-            <PatientCard
-               key={patient.id}
-               patient={patient}
-               onViewDetails={handleViewDetails}
-               onEdit={(e) => handleEdit(e)}
-               onDelete={handleDelete}
-            />
-         ))}
-      </SimpleGrid>
-   )}
-</Flex>
+               <ModalFooter>
+                  <Button
+                     colorScheme="blue"
+                     mr={3}
+                     onClick={() => {
+                        handleAddPatient();
+                     }}
+                  >
+                     Save
+                  </Button>
+                  <Button onClick={onClose}>Cancel</Button>
+               </ModalFooter>
+            </ModalContent>
+         </Modal>
 
+         {/* ----------------- edit modal --------------  */}
+         <Modal
+            initialFocusRef={initialRef}
+            finalFocusRef={finalRef}
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+         >
+            <ModalOverlay />
+            <ModalContent>
+               <ModalHeader>Edit Patient</ModalHeader>
+               <ModalBody pb={6}>
+                  <FormControl>
+                     <FormLabel>First name</FormLabel>
+                     <Input
+                        ref={initialRef}
+                        placeholder="First name"
+                        name="firstName"
+                        value={editedPatient.firstName}
+                        onChange={handleInputChangee}
+                     />
+                  </FormControl>
+
+                  <FormControl mt={4}>
+                     <FormLabel>Last name</FormLabel>
+                     <Input
+                        placeholder="Last name"
+                        name="lastName"
+                        value={editedPatient.lastName}
+                        onChange={handleInputChangee}
+                     />
+                  </FormControl>
+                  <FormControl mt={4}>
+                     <FormLabel>Age</FormLabel>
+                     <Input
+                        placeholder="Age"
+                        name="age"
+                        value={editedPatient.age}
+                        onChange={handleInputChangee}
+                     />
+                  </FormControl>
+               </ModalBody>
+
+               <ModalFooter>
+                  <Button colorScheme="blue" mr={3} onClick={handleSave}>
+                     Save
+                  </Button>
+                  <Button onClick={() => setIsEditModalOpen(false)}>
+                     Cancel
+                  </Button>
+               </ModalFooter>
+            </ModalContent>
+         </Modal>
+         {/* ---------------------------------------------------- */}
+         {loading ? (
+            <>
+               <HashLoader color="#36d7b7" />
+               <h1>Loading patients...</h1>
+            </>
+         ) : (
+            <SimpleGrid columns={[1, 2, 3]} spacing={10}>
+               {patients.map((patient) => (
+                  <PatientCard
+                     key={patient.id}
+                     patient={patient}
+                     onViewDetails={handleViewDetails}
+                     onEdit={(e) => handleEdit(e)}
+                     onDelete={handleDelete}
+                  />
+               ))}
+            </SimpleGrid>
+         )}
+      </Flex>
    );
 };
 
