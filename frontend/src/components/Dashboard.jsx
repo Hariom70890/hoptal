@@ -21,10 +21,14 @@ import {  HashLoader } from "react-spinners";
 import PatientCard from "./PatientCard";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+// import { env } from 'node:process';
 
+// require('dotenv').config()
 const Dashboard = () => {
-   var authToken = localStorage.getItem("authToken");
+   var authToken = localStorage.getItem("authToken") 
    const user = localStorage.getItem("roles");
+   const url = process.env.REACT_APP_PORT
+   console.log(url)
    // -------------------------------------- -------------------------//
    // const swal = require('sweetalert2')
    const { isOpen, onOpen, onClose } = useDisclosure();
@@ -93,10 +97,10 @@ const Dashboard = () => {
    };
 
    const handleSave = async () => {
-      console.log(editedPatient.id);
+      // console.log(editedPatient.id);
       try {
          const response = await fetch(
-            `http://localhost:4500/patient/${editedPatient.id}`,
+            `https://ehr-dashboard.onrender.com/patient/${editedPatient.id}`,
             {
                method: "PUT",
                headers: {
@@ -132,7 +136,7 @@ const Dashboard = () => {
    const fetchPatientsFromAPI = async () => {
       // const authToken = localStorage.getItem(authToken)
       try {
-         const response = await fetch("http://localhost:4500/patient", {
+         const response = await fetch("https://ehr-dashboard.onrender.com/patient", {
             headers: {
                Authorization: `${authToken}`,
             },
@@ -164,7 +168,7 @@ const Dashboard = () => {
       try {
          if (user === "ADMIN") {
             const response = await fetch(
-               `http://localhost:4500/patient/${patientId}`,
+               `https://ehr-dashboard.onrender.com/patient/${patientId}`,
                {
                   method: "DELETE",
                   headers: {
@@ -211,7 +215,7 @@ const Dashboard = () => {
          // Make a request to your backend to create a new patient.
          //  const authToken = "your_auth_token"; // Replace with your actual authentication token
          console.log(newPatient);
-         const response = await fetch("http://localhost:4500/patient", {
+         const response = await fetch("https://ehr-dashboard.onrender.com/patient", {
             method: "POST",
             headers: {
                Authorization: `${authToken}`,
@@ -254,6 +258,8 @@ const Dashboard = () => {
    return (
       <Flex direction="column" align="center" p={4}>
          <Heading mb={4}>Patient Dashboard</Heading>
+         <Heading  > Welcome {user}</Heading>
+
          {user === "ADMIN" && (
             <Button
                onClick={() => {

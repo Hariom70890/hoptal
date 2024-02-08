@@ -19,7 +19,10 @@ app.use(express.json());
 // Mount routers
 app.use("/users", userRouter);
 app.use("/patient", patientRouter)
-// app.use("/", capsuleRouter);
+
+app.get("/", (req,res)=>{
+  res.send("Hello")
+});
 
 const port = process.env.PORT || 3001;
 

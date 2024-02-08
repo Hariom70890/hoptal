@@ -7,7 +7,7 @@ import {
   SIGNUP_SUCCESS,
 } from "../actionTypes";
 
-const apiUrl = "http://localhost:4500";
+const apiUrl = "https://ehr-dashboard.onrender.com";
 
 const url = `${apiUrl}/users`;
 
@@ -24,10 +24,10 @@ export const login = (query) => async (dispatch) => {
     console.log(data);
     query?.callback(data);
     if (res?.ok) {
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("authToken", data.token);
       localStorage.setItem("roles", data.role);
       localStorage.setItem("id", data.id);
-      localStorage.setItem("name", data.username);
+      localStorage.setItem("name", data.username);  
       dispatch({
         type: LOGIN_SUCCESS,
         payload: { token: data?.token },

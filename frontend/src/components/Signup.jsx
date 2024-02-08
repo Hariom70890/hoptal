@@ -21,7 +21,7 @@ const Signup = () => {
   const handleSignup = async () => {
     try {
       // Replace with your backend API endpoint
-      const signupEndpoint = "http://localhost:4500/users/signup";
+      const signupEndpoint = "https://ehr-dashboard.onrender.com/users/signup";
   
       const response = await fetch(signupEndpoint, {
         method: "POST",
