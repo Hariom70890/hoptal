@@ -7,7 +7,7 @@ import Dashboard from './Dashboard'
 
 const AllRoutes = () => {
   return (
-    <Routes>
+    <Routes >
         <Route path='/login' element={<Login/>} />
         <Route path='/' element={<Login/>} />
         <Route path='/signup' element={<Signup/>}/>

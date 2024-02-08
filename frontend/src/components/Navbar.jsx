@@ -22,27 +22,34 @@ import {
    ChevronDownIcon,
    ChevronRightIcon,
 } from "@chakra-ui/icons";
-import { Link as Reactlink } from "react-router-dom";
+import { Link as Reactlink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
    const [token, setToken] = useState(false);
    const { isOpen, onToggle } = useDisclosure();
+   const tokendata = localStorage.getItem("authToken");
    useEffect(() => {
-      const tokendata = localStorage.getItem("authToken");
       if (tokendata) {
          setToken(true);
       } else {
          setToken(false);
       }
    }, [token]);
-
+   const navigate = useNavigate();
    function handlelogout() {
       localStorage.removeItem("authToken");
+      localStorage.removeItem("roles")
       setToken(false);
-      
+      navigate("/login");
    }
-
+   useEffect(() => {
+      if (tokendata) {
+         setToken(true);
+      } else {
+         setToken(false);
+      }
+   });
    return (
       <Box position="fixed" top="0%" zIndex={3} width={"100%"}>
          <Flex
@@ -241,6 +248,7 @@ const MobileNav = () => {
       <Stack
          bg={useColorModeValue("#ffffffc5", "gray.800")}
          p={4}
+         // marginTop={}
          display={{ md: "none" }}
       >
          {NAV_ITEMSMob.map((navItem) => (
@@ -312,45 +320,37 @@ const MobileNavItem = ({ label, children, href }) => {
 const NAV_ITEMS = [
    {
       label: "ON THE MENU",
-      href: "/products",
+      href: "/dashboard",
    },
    {
-      label: "PRICING",
-      href: "/pricing",
+      label: "HOSPITAL",
    },
    {
-      label: "WINE",
-      href: "/wine",
+      label: "FACILITIES",
    },
    {
-      label: "GIFTS",
-      href: "/gift",
+      label: "SERVICES",
    },
 ];
 
 const NAV_ITEMSMob = [
    {
       label: "ON THE MENU",
-      href: "/products",
+      href: "/dashboard",
    },
    {
-      label: "PLANS",
-      href: "#",
+      label: "HOSPITAL",
    },
    {
-      label: "WINE",
-      href: "/wine",
+      label: "FACILITIES",
    },
    {
-      label: "GIFTS",
-      href: "#",
+      label: "SERVICES",
    },
    {
       label: "MARKET",
-      href: "#",
    },
    {
       label: "ADMIN",
-      href: "#",
    },
 ];

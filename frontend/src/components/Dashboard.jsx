@@ -17,7 +17,7 @@ import {
    FormLabel,
    Input,
 } from "@chakra-ui/react";
-import {  HashLoader } from "react-spinners";
+import { HashLoader } from "react-spinners";
 import PatientCard from "./PatientCard";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -25,10 +25,10 @@ import Swal from "sweetalert2";
 
 // require('dotenv').config()
 const Dashboard = () => {
-   var authToken = localStorage.getItem("authToken") 
+   var authToken = localStorage.getItem("authToken");
    const user = localStorage.getItem("roles");
-   const url = process.env.REACT_APP_PORT
-   console.log(url)
+   const url = process.env.REACT_APP_PORT;
+   console.log(url);
    // -------------------------------------- -------------------------//
    // const swal = require('sweetalert2')
    const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,14 +71,11 @@ const Dashboard = () => {
          if (user === "ADMIN") {
             setIsEditModalOpen(true);
          } else {
-            Swal.fire({
-               title: 'You are a User and only has the assess to see it',
-               html: ('<div>')
-                 .addClass('some-class')
-                 .text('You are a User and only has the assess to see it'),
-               animation: false,
-               customClass: 'animated tada'
-             })
+            Swal.fire(
+               "Oops...",
+               "You are a user and you are not allowed to delete it.  Something went wrong!",
+               "error"
+            );
             // alert("You are a User and only has the assess to see it");
             console.error("Failed to delete patient");
          }
@@ -136,11 +133,14 @@ const Dashboard = () => {
    const fetchPatientsFromAPI = async () => {
       // const authToken = localStorage.getItem(authToken)
       try {
-         const response = await fetch("https://ehr-dashboard.onrender.com/patient", {
-            headers: {
-               Authorization: `${authToken}`,
-            },
-         });
+         const response = await fetch(
+            "https://ehr-dashboard.onrender.com/patient",
+            {
+               headers: {
+                  Authorization: `${authToken}`,
+               },
+            }
+         );
 
          if (!response.ok) {
             throw new Error("Failed to fetch patients");
@@ -159,7 +159,6 @@ const Dashboard = () => {
    }, []);
 
    const handleViewDetails = (patientId) => {
-
       console.log("View details for patient:", patientId);
    };
 
@@ -179,7 +178,9 @@ const Dashboard = () => {
 
             if (response.ok) {
                console.log("Patient deleted successfully:", patientId);
-
+                 Swal.fire(
+                  "Good job!", "You clicked the button!", "success"
+            );
                // If you want to update the state to reflect the deletion in the UI,
                // you can call a function passed through props or update the state accordingly.
                fetchPatientsFromAPI();
@@ -188,10 +189,10 @@ const Dashboard = () => {
             }
          } else {
             Swal.fire(
-               'Oops...',
-               'You are a user and you are not allowed to delete it.  Something went wrong!',
-               'error'
-             )
+               "Oops...",
+               "You are a user and you are not allowed to delete it.  Something went wrong!",
+               "error"
+            );
             // alert("You are a user and you are not allowed to delete it");
             console.log("User does not have permission to delete.");
          }
@@ -215,23 +216,26 @@ const Dashboard = () => {
          // Make a request to your backend to create a new patient.
          //  const authToken = "your_auth_token"; // Replace with your actual authentication token
          console.log(newPatient);
-         const response = await fetch("https://ehr-dashboard.onrender.com/patient", {
-            method: "POST",
-            headers: {
-               Authorization: `${authToken}`,
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newPatient),
-         });
+         const response = await fetch(
+            "https://ehr-dashboard.onrender.com/patient",
+            {
+               method: "POST",
+               headers: {
+                  Authorization: `${authToken}`,
+                  "Content-Type": "application/json",
+               },
+               body: JSON.stringify(newPatient),
+            }
+         );
          // console.log(response);
          if (response.ok) {
             const newPatient = response.json();
             console.log("New patient added successfully:", newPatient);
             Swal.fire(
-               'Good job!',
-               'New patient added successfully!',
-               'success'
-             )
+               "Good job!",
+               "New patient added successfully!",
+               "success"
+            );
             // alert("New patient added successfully");
             fetchPatientsFromAPI();
             onClose();
@@ -258,7 +262,7 @@ const Dashboard = () => {
    return (
       <Flex direction="column" align="center" p={4}>
          <Heading mb={4}>Patient Dashboard</Heading>
-         <Heading  > Welcome {user}</Heading>
+         <Heading> Welcome {user}</Heading>
 
          {user === "ADMIN" && (
             <Button
