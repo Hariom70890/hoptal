@@ -179,7 +179,7 @@ const Dashboard = () => {
             if (response.ok) {
                console.log("Patient deleted successfully:", patientId);
                  Swal.fire(
-                  "Good job!", "You clicked the button!", "success"
+                  "Good job!", "You Deleted The Patient Successfully !!", "success"
             );
                // If you want to update the state to reflect the deletion in the UI,
                // you can call a function passed through props or update the state accordingly.
