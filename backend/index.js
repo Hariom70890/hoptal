@@ -1,38 +1,28 @@
-const express = require("express");
-const {connection} = require("./db");
-const dotenv = require("dotenv");
-const cors = require("cors");
-const {userRouter} = require("./routes/user.Routes");
-const patientRouter = require("./routes/patient.Routes");
-
-// Load environment variables from .env file
-dotenv.config();
+// app.js
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const connectDB = require('./config/db');
+const {appointmentRouter} = require( './routes/appointment' );
+const {authRouter} = require( './routes/Auth' );
+const {prescriptionRouter} = require( './routes/prescription' );
 
 const app = express();
 
-// Enable Cross-Origin Resource Sharing (CORS)
+// Middleware
 app.use(cors());
-
-// Parse JSON requests
 app.use(express.json());
 
-// Mount routers
-app.use("/users", userRouter);
-app.use("/patient", patientRouter)
+// Connect to Database
+connectDB();
 
-app.get("/", (req,res)=>{
-  res.send("Hello")
-});
+// Routes
+// app.use('/api/auth', require('./routes/auth.js'));
+app.use('/api/auth', authRouter) 
+app.use('/api/appointments', appointmentRouter);
+app.use('/api/prescriptions', prescriptionRouter);
 
-const port = process.env.PORT || 3001;
-
-// Start the server and connect to the database
-app.listen(port, async () => {
-  try {
-    await connection;
-    console.log("Connected to the database");
-    console.log(`Server is listening on port ${port}`);
-  } catch (error) {
-    console.error(`Error connecting to the database: ${error.message}`);
-  }
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
