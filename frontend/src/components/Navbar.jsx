@@ -1,356 +1,75 @@
+import React, { useEffect, useState } from 'react';
+import {Link as ReactLink, useNavigate, useLocation} from 'react-router-dom';
+import { Bell, Calendar, ChevronRight, Home, User, FileText, Database, PlusSquare } from 'lucide-react'; 
 import {
-   Box,
-   Flex,
-   Text,
-   IconButton,
-   Button,
-   Stack,
-   Collapse,
-   Icon,
-   Link,
-   Popover,
-   PopoverTrigger,
-   PopoverContent,
-   useColorModeValue,
-   useDisclosure,
-   Image,
-} from "@chakra-ui/react";
-//  import logo from "../Image/Balanced-removebg-preview.png"
+  Box,
+  Flex,
+  Text,
+  IconButton,
+  Button,
+  Stack,
+  Collapse,
+  Icon,
+  Link,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  useColorModeValue,
+  useDisclosure,
+  Avatar,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  Badge
+} from '@chakra-ui/react';
 import {
-   HamburgerIcon,
-   CloseIcon,
-   ChevronDownIcon,
-   ChevronRightIcon,
-} from "@chakra-ui/icons";
-import { Link as Reactlink, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+  HamburgerIcon,
+  CloseIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  BellIcon
+} from '@chakra-ui/icons';
+import { authService } from '../services/api';
 
-export default function Navbar() {
-   const [token, setToken] = useState(false);
-   const { isOpen, onToggle } = useDisclosure();
-   const tokendata = localStorage.getItem("authToken");
-   useEffect(() => {
-      if (tokendata) {
-         setToken(true);
-      } else {
-         setToken(false);
-      }
-   }, [token]);
-   const navigate = useNavigate();
-   function handlelogout() {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("roles")
-      setToken(false);
-      navigate("/login");
-   }
-   useEffect(() => {
-      if (tokendata) {
-         setToken(true);
-      } else {
-         setToken(false);
-      }
-   });
-   return (
-      <Box position="fixed" top="0%" zIndex={3} width={"100%"}>
-         <Flex
-            bg={useColorModeValue("#ffffffc5", "gray.800")}
-            color={useColorModeValue("gray.600", "white")}
-            minH={"60px"}
-            py={{ base: 2 }}
-            px={{ base: 4 }}
-            borderBottom={1}
-            borderStyle={"solid"}
-            borderColor={useColorModeValue("gray.200", "gray.900")}
-            align={"center"}
-         >
-            <Flex
-               flex={{ base: 1, md: "auto" }}
-               ml={{ base: -2 }}
-               display={{ base: "flex", md: "none" }}
-            >
-               <IconButton
-                  onClick={onToggle}
-                  icon={
-                     isOpen ? (
-                        <CloseIcon w={3} h={3} />
-                     ) : (
-                        <HamburgerIcon w={5} h={5} />
-                     )
-                  }
-                  variant={"ghost"}
-                  aria-label={"Toggle Navigation"}
-               />
-            </Flex>
-            <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-               {/* <Reactlink to='/'><Image src={logo} width={{base: '140px', md:'120px'}}  alt='Logo' /></Reactlink> */}
+const NavBar = () => {
+  const { isOpen, onToggle } = useDisclosure();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [notifications] = useState(3); // Example notification count
 
-               <Flex display={{ base: "none", md: "flex" }} ml={10}>
-                  <DesktopNav />
-               </Flex>
-            </Flex>
-            {token ? (
-               <Stack
-                  flex={{ base: 1, md: 0 }}
-                  justify={"flex-end"}
-                  direction={"row"}
-                  spacing={6}
-               >
-                  <Button
-                     as={"a"}
-                     display={{ base: "none", md: "inline-flex" }}
-                     fontSize={"sm"}
-                     fontWeight={600}
-                     color={"white"}
-                     bg={"#1A237E"}
-                     _hover={{
-                        bg: "#1a227ed6",
-                     }}
-                     onClick={handlelogout}
-                  >
-                     Logout
-                  </Button>
-               </Stack>
-            ) : (
-               <Stack
-                  flex={{ base: 1, md: 0 }}
-                  justify={"flex-end"}
-                  direction={"row"}
-                  spacing={6}
-               >
-                  <Reactlink to="/login">
-                     <Button
-                        as={"a"}
-                        fontSize={"sm"}
-                        fontWeight={400}
-                        variant={"link"}
-                        color={"black"}
-                        mt={"10px"}
-                     >
-                        Sign In
-                     </Button>
-                  </Reactlink>
-                  <Reactlink to="/signup">
-                     <Button
-                        as={"a"}
-                        display={{ base: "none", md: "inline-flex" }}
-                        fontSize={"sm"}
-                        fontWeight={600}
-                        color={"white"}
-                        bg={"#1A237E"}
-                        _hover={{
-                           bg: "#1a227ed6",
-                        }}
-                     >
-                        Sign Up
-                     </Button>
-                  </Reactlink>
-               </Stack>
-            )}
-         </Flex>
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, [location]);
 
-         <Collapse in={isOpen} animateOpacity>
-            <MobileNav />
-         </Collapse>
-      </Box>
-   );
-}
+  const handleLogout = () => {
+    authService.logout();
+    setIsAuthenticated(false);
+    navigate('/login');
+  };
 
-const DesktopNav = () => {
-   const linkColor = useColorModeValue("black", "black");
-   const linkHoverColor = useColorModeValue("gray.800", "white");
-   const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  return (
+    <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Home className="h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-xl font-semibold">HMS</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Bell className="h-5 w-5 text-gray-500" />
+              <div className="flex items-center space-x-2">
+                <User className="h-5 w-5 text-gray-500" />
+                <span className="text-sm font-medium">John Doe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+  );
+}; 
 
-   return (
-      <Stack direction={"row"} spacing={4} paddingTop="18px">
-         {NAV_ITEMS.map((navItem) => (
-            <Box key={navItem.label}>
-               <Popover trigger={"hover"} placement={"bottom-start"}>
-                  <PopoverTrigger>
-                     <Reactlink to={navItem.href}>
-                        <Link
-                           p={2}
-                           fontSize={"sm"}
-                           fontWeight={500}
-                           color={linkColor}
-                           _hover={{
-                              textDecoration: "none",
-                              color: linkHoverColor,
-                           }}
-                        >
-                           {navItem.label}
-                        </Link>
-                     </Reactlink>
-                  </PopoverTrigger>
-
-                  {navItem.children && (
-                     <PopoverContent
-                        border={0}
-                        boxShadow={"xl"}
-                        bg={popoverContentBgColor}
-                        p={4}
-                        rounded={"xl"}
-                        minW={"sm"}
-                     >
-                        <Stack>
-                           {navItem.children.map((child) => (
-                              <DesktopSubNav key={child.label} {...child} />
-                           ))}
-                        </Stack>
-                     </PopoverContent>
-                  )}
-               </Popover>
-            </Box>
-         ))}
-      </Stack>
-   );
-};
-
-const DesktopSubNav = ({ label, href, subLabel }) => {
-   return (
-      <Reactlink to={href}>
-         <Link
-            role={"group"}
-            display={"block"}
-            p={2}
-            rounded={"md"}
-            _hover={{ bg: useColorModeValue("pink.50", "gray.900") }}
-         >
-            <Stack direction={"row"} align={"center"}>
-               <Box>
-                  <Text
-                     transition={"all .3s ease"}
-                     _groupHover={{ color: "pink.400" }}
-                     fontWeight={500}
-                  >
-                     {label}
-                  </Text>
-                  <Text fontSize={"sm"}>{subLabel}</Text>
-               </Box>
-               <Flex
-                  transition={"all .3s ease"}
-                  transform={"translateX(-10px)"}
-                  opacity={0}
-                  _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
-                  justify={"flex-end"}
-                  align={"center"}
-                  flex={1}
-               >
-                  <Icon color={"pink.400"} w={5} h={5} as={ChevronRightIcon} />
-               </Flex>
-            </Stack>
-         </Link>
-      </Reactlink>
-   );
-};
-
-const MobileNav = () => {
-   return (
-      <Stack
-         bg={useColorModeValue("#ffffffc5", "gray.800")}
-         p={4}
-         // marginTop={}
-         display={{ md: "none" }}
-      >
-         {NAV_ITEMSMob.map((navItem) => (
-            <MobileNavItem key={navItem.label} {...navItem} />
-         ))}
-      </Stack>
-   );
-};
-
-const MobileNavItem = ({ label, children, href }) => {
-   const { isOpen, onToggle } = useDisclosure();
-
-   return (
-      <Stack spacing={4} onClick={children && onToggle}>
-         <Flex
-            py={2}
-            as={Link}
-            justify={"space-between"}
-            align={"center"}
-            _hover={{
-               textDecoration: "none",
-            }}
-         >
-            <Reactlink to={href}>
-               <Text
-                  fontWeight={600}
-                  fontFamily="Chronicle Deck"
-                  color={useColorModeValue("gray.600", "gray.200")}
-               >
-                  {label}
-               </Text>
-            </Reactlink>
-            {children && (
-               <Icon
-                  as={ChevronDownIcon}
-                  transition={"all .25s ease-in-out"}
-                  transform={isOpen ? "rotate(180deg)" : ""}
-                  w={6}
-                  h={6}
-               />
-            )}
-         </Flex>
-
-         <Collapse
-            in={isOpen}
-            animateOpacity
-            style={{ marginTop: "0!important" }}
-         >
-            <Stack
-               mt={2}
-               pl={4}
-               borderLeft={1}
-               borderStyle={"solid"}
-               borderColor={useColorModeValue("gray.200", "gray.700")}
-               align={"start"}
-            >
-               {children &&
-                  children.map((child) => (
-                     <Link key={child.label} py={2} href={child.href}>
-                        {child.label}
-                     </Link>
-                  ))}
-            </Stack>
-         </Collapse>
-      </Stack>
-   );
-};
-
-const NAV_ITEMS = [
-   {
-      label: "ON THE MENU",
-      href: "/dashboard",
-   },
-   {
-      label: "HOSPITAL",
-   },
-   {
-      label: "FACILITIES",
-   },
-   {
-      label: "SERVICES",
-   },
-];
-
-const NAV_ITEMSMob = [
-   {
-      label: "ON THE MENU",
-      href: "/dashboard",
-   },
-   {
-      label: "HOSPITAL",
-   },
-   {
-      label: "FACILITIES",
-   },
-   {
-      label: "SERVICES",
-   },
-   {
-      label: "MARKET",
-   },
-   {
-      label: "ADMIN",
-   },
-];
+export default NavBar;
